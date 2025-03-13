@@ -40,40 +40,10 @@ dependencies {
     implementation("com.google.android.gms:play-services-ads-identifier:18.0.1")
 }
 
-// BUILD TASKS DEFINITION
-val copyDebugAARToDemoAddons by tasks.registering(Copy::class) {
-    description = "Copies the generated debug AAR binary to the plugin's addons directory"
-    from("build/outputs/aar")
-    include("$pluginName-debug.aar")
-    into("demo/addons/$pluginName/bin/debug")
-}
-
-val copyReleaseAARToDemoAddons by tasks.registering(Copy::class) {
-    description = "Copies the generated release AAR binary to the plugin's addons directory"
-    from("build/outputs/aar")
-    include("$pluginName-release.aar")
-    into("demo/addons/$pluginName/bin/release")
-}
-
-val cleanDemoAddons by tasks.registering(Delete::class) {
-    delete("demo/addons/$pluginName")
-}
-
-val copyAddonsToDemo by tasks.registering(Copy::class) {
-    description = "Copies the export scripts templates to the plugin's addons directory"
-
-    dependsOn(cleanDemoAddons)
-    finalizedBy(copyDebugAARToDemoAddons)
-    finalizedBy(copyReleaseAARToDemoAddons)
-
-    from("export_scripts_template")
-    into("demo/addons/$pluginName")
-}
-
 tasks.named("assemble").configure {
-    finalizedBy(copyAddonsToDemo)
+    
 }
 
 tasks.named<Delete>("clean").apply {
-    dependsOn(cleanDemoAddons)
+    
 }
