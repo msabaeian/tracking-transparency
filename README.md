@@ -31,22 +31,22 @@ This plugin handles two main tracking-related features:
 
 ## Installation and setup
 1. Install directly from the Asset Library tab in Godot (recommended):
-   - if you installed using this method, jump to step 3
+   - if you installed using this method, jump to step 4
 2. Manual Installation:
    - Download the latest version from the Releases section
    - Copy the `addons/tracking_transparency` folder to your Godot project's `addons` directory
-   - Copy the `ios` folder to the root folder of your project
 3. Enable the plugin in `Project Settings → Plugins`
 4. Platforms configuration:
    - Android:
      - Enable [Use Gradle Build](https://docs.godotengine.org/en/stable/tutorials/export/android_gradle_build.html) in your export settings
    - iOS:
+     - Copy the files inside `addons/tracking_transparency/ios/[YOUR_GODOT_VERSION]` into the `ios/plugins` folder located at the root of your project (create this folder if it does not exist)
      - Check the "Tracking Transparency" option under `Project → Export → iOS → Plugins`
      - Add a tracking usage description in `Project → Export → iOS → Plugins Plist` by setting the `NSUserTrackingUsageDescription` key, you must provide a clear reason for tracking or Apple will reject your app/game during review
 
 ## Usage
 
-**Note:** This plugin adds a singleton to your project runtime. If you want to have a node instead, you need to modify the plugin.gd file and use add_custom_type.
+**Note:** This plugin adds a singleton to your project runtime. If you want to have a node instead, you need to modify the plugin.gd file and use `add_custom_type` instead of `add_autoload_singleton`.
 
 ### Basic Implementation
 
@@ -92,19 +92,21 @@ enum AuthorizationStatus {
 Requests permission from the user to track them and emits the result by emitting `authorization_status_received`
 - On iOS 14+: displays the system tracking permission dialog
 - On iOS 13 and earlier: always emit `AUTHORIZED`
+- On iOS simulator, 
 - On Android: no user prompt appears but the status will be check and emitted
 
 #### `get_advertising_id()`
-Returns the advertising ID as a string, or `null` if unavailable or not authorized.
+Returns the advertising ID as a string, or `null` if unavailable or not authorized
 - On iOS: Returns the IDFA (Identifier for Advertisers)
 - On Android: Returns the AAID (Android Advertising ID)
+- On iOS simulator: Always returns `null`
 
 #### `open_app_settings()`
 _(iOS only)_
-Opens the application settings page. Useful for directing users to change their tracking preferences if they've denied the permission before.
+Opens the application settings page. Useful for directing users to change their tracking preferences if they've denied the permission before
 
 #### `get_tracking_authorization_status()`
-Returns the current authorization status without requesting permission.
+Returns the current authorization status without requesting permission
 - On iOS below 14: Always returns `AUTHORIZED`
 - On Android: Returns `AUTHORIZED` if the user has not opted out of tracking, otherwise `DENIED`
 
